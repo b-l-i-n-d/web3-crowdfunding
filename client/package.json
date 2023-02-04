@@ -1,0 +1,35 @@
+{
+	"name": "client",
+	"private": true,
+	"version": "0.0.0",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"deploy": "yarn build && npx thirdweb@latest upload dist",
+		"lint": "yarn add -D prettier && yarn add -D @babel/eslint-parser && npx install-peerdeps --dev eslint-config-airbnb && yarn add -D eslint-config-prettier eslint-plugin-prettier @babel/preset-react"
+	},
+	"dependencies": {
+		"@thirdweb-dev/react": "^3",
+		"@thirdweb-dev/sdk": "^3",
+		"ethers": "^5.7.2",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-router-dom": "^6.8.0"
+	},
+	"devDependencies": {
+		"@babel/eslint-parser": "^7.19.1",
+		"@babel/preset-react": "^7.18.6",
+		"@vitejs/plugin-react": "^2",
+		"eslint": "8.2.0",
+		"eslint-config-airbnb": "19.0.4",
+		"eslint-config-prettier": "^8.6.0",
+		"eslint-plugin-import": "2.25.3",
+		"eslint-plugin-jsx-a11y": "6.5.1",
+		"eslint-plugin-prettier": "^4.2.1",
+		"eslint-plugin-react": "7.28.0",
+		"eslint-plugin-react-hooks": "4.3.0",
+		"prettier": "^2.8.3",
+		"vite": "^3"
+	}
+}
