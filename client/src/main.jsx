@@ -5,6 +5,8 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './styles/globals.css';
 
+import { StateContextProvider } from './context';
+
 // This is the chainId your dApp will work on.
 const activeChainId = ChainId.Goerli;
 
@@ -14,7 +16,9 @@ root.render(
     <React.StrictMode>
         <ThirdwebProvider desiredChainId={activeChainId}>
             <BrowserRouter>
-                <App />
+                <StateContextProvider>
+                    <App />
+                </StateContextProvider>
             </BrowserRouter>
         </ThirdwebProvider>
     </React.StrictMode>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Navbar, Sidebar } from './components';
-import { Home } from './pages';
+import { CampaignDetails, CreateCampaign, Home, Profile } from './pages';
 
 export default function App() {
     return (
@@ -14,6 +14,9 @@ export default function App() {
                 <Navbar />
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/create-campaign" element={<CreateCampaign />} />
+                    <Route path="/campaign-details/:id" element={<CampaignDetails />} />
                 </Routes>
             </div>
         </div>
