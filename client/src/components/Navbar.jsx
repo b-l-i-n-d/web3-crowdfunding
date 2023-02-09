@@ -4,12 +4,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CustomButton } from '.';
 import { logo, menu, search, thirdweb } from '../assets';
 import { navlinks } from '../constants';
+import { useStateContext } from '../context';
 
 function Navbar() {
     const navigate = useNavigate();
     const [isActive, setIsActive] = useState('dashboard');
     const [toggleDrawer, setToggleDrawer] = useState(false);
-    const address = '0x123';
+    const { connect, address } = useStateContext();
 
     return (
         <div className="flex md:flex-row flex-col-reverse justify-between mb-[35px] gap-6">
@@ -30,10 +31,10 @@ function Navbar() {
                     btnType="button"
                     title={address ? 'Create a campaign' : 'Connect'}
                     styles={address ? 'bg-[#1dc071]' : 'bg-[#8c6dfd]'}
-                    // handleClick={() => {
-                    //     if (address) navigate('create-campaign');
-                    //     else connect();
-                    // }}
+                    handleClick={() => {
+                        if (address) navigate('create-campaign');
+                        else connect();
+                    }}
                 />
 
                 <Link to="/profile">
@@ -97,10 +98,10 @@ function Navbar() {
                             btnType="button"
                             title={address ? 'Create a campaign' : 'Connect'}
                             styles={address ? 'bg-[#1dc071]' : 'bg-[#8c6dfd]'}
-                            // handleClick={() => {
-                            //     if (address) navigate('create-campaign');
-                            //     else connect();
-                            // }}
+                            handleClick={() => {
+                                if (address) navigate('create-campaign');
+                                else connect();
+                            }}
                         />
                     </div>
                 </div>
