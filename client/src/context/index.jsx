@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 const StateContext = createContext();
 
 export function StateContextProvider({ children }) {
-    const { contract } = useContract('0x7adEF9Fc792c1bCe093CdE24bB698931Db0525bE');
+    const { contract } = useContract('0xa2f8e20918CF568a76E66cf1Da4Eb10DCbAE500F');
     const { mutateAsync: createCampaign } = useContractWrite(contract, 'createCampaign');
 
     const address = useAddress();
@@ -62,6 +62,12 @@ export function StateContextProvider({ children }) {
         return data;
     };
 
+    // withdraw funds
+    const withdraw = async (pId) => {
+        const data = await contract.call('withdraw', pId);
+        return data;
+    };
+
     const getDonations = async (pId) => {
         const donations = await contract.call('getDonators', pId);
         const numberOfDonations = donations[0].length;
@@ -78,6 +84,18 @@ export function StateContextProvider({ children }) {
         return parsedDonations;
     };
 
+    // get paymnets from etherscan
+    const getPayments = async () => {
+        const url = `https://api-goerli.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${
+            import.meta.env.VITE_ETHER_SCAN
+        }`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        return data;
+    };
+
     return (
         <StateContext.Provider
             // eslint-disable-next-line react/jsx-no-constructed-context-values
@@ -89,7 +107,9 @@ export function StateContextProvider({ children }) {
                 getCampaigns,
                 getUserCampaigns,
                 donate,
+                withdraw,
                 getDonations,
+                getPayments,
             }}
         >
             {children}

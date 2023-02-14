@@ -32,11 +32,30 @@ function CampaignDetails() {
     const handleDonate = async () => {
         setIsLoading(true);
 
-        await donate(state.pId, amount);
+        try {
+            await donate(state.pId, amount);
 
-        navigate('/');
-        setIsLoading(false);
+            navigate('/');
+            setIsLoading(false);
+        } catch (error) {
+            alert('Transaction failed. Please try again.');
+            setIsLoading(false);
+        }
     };
+
+    // const handleWithdraw = async () => {
+    //     setIsLoading(true);
+
+    //     try {
+    //         await contract.call('withdraw', state.pId);
+
+    //         navigate('/');
+    //         setIsLoading(false);
+    //     } catch (error) {
+    //         alert('Transaction failed. Please try again.');
+    //         setIsLoading(false);
+    //     }
+    // };
 
     return (
         <div>
@@ -155,7 +174,6 @@ function CampaignDetails() {
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
                             />
-
                             <div className="my-[20px] p-4 bg-[#13131a] rounded-[10px]">
                                 <h4 className="font-epilogue font-semibold text-[14px] leading-[22px] text-white">
                                     Back it because you believe in it.
@@ -165,13 +183,20 @@ function CampaignDetails() {
                                     you.
                                 </p>
                             </div>
-
                             <CustomButton
                                 btnType="button"
                                 title="Fund Campaign"
                                 styles="w-full bg-[#8c6dfd]"
                                 handleClick={handleDonate}
                             />
+                            {/* {state.owner === address && (
+                                <CustomButton
+                                    btnType="button"
+                                    title="Withdraw"
+                                    styles="w-full mt-[20px] bg-[#ff4d4d]"
+                                    handleClick={handleWithdraw}
+                                />
+                            )} */}
                         </div>
                     </div>
                 </div>

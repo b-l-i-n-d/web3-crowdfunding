@@ -26,6 +26,11 @@ function FormField({ labelName, placeholder, inputType, isTextArea, value, handl
                     type={inputType}
                     step="0.1"
                     placeholder={placeholder}
+                    min={
+                        new Date(new Date().setDate(new Date().getDate() + 1))
+                            .toISOString()
+                            .split('T')[0]
+                    }
                     className="py-[15px] sm:px-[25px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-white text-[14px] placeholder:text-[#4b5264] rounded-[10px] sm:min-w-[300px]"
                 />
             )}
