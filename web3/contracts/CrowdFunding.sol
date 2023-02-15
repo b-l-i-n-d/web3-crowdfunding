@@ -2,13 +2,6 @@
 pragma solidity ^0.8.9;
 
 contract CrowdFunding {
-    event testConditon(
-        uint256 deadline,
-        uint256 currentTimeInMs,
-        uint256 diff,
-        bool condition
-    );
-
     struct Campaign {
         address payable owner;
         string title;
@@ -35,13 +28,6 @@ contract CrowdFunding {
     ) public returns (uint256) {
         Campaign storage campaign = campaigns[numberOfCampaigns];
         uint256 currentTimeInMs = block.timestamp * 1000;
-
-        emit testConditon(
-            _deadline,
-            currentTimeInMs,
-            _deadline - currentTimeInMs,
-            _deadline > currentTimeInMs
-        );
 
         require(
             _deadline > currentTimeInMs,
