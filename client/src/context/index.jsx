@@ -6,21 +6,30 @@ import { ethers } from 'ethers';
 const StateContext = createContext();
 
 export function StateContextProvider({ children }) {
-    const { contract } = useContract('0xa2f8e20918CF568a76E66cf1Da4Eb10DCbAE500F');
-    const { mutateAsync: createCampaign } = useContractWrite(contract, 'createCampaign');
+    const { contract: campaignFactoryContract } = useContract(
+        '0x26Ca3aE8Bd22a65FB02f75CC9B3B2959AB74839D'
+    );
+    const { contract: campaignContract } = useContract(
+        '0x018cC231dfAf369f7F07886404d4f3d09c473462'
+    );
+    const { mutateAsync: createCampaign } = useContractWrite(
+        campaignFactoryContract,
+        'createCampaign'
+    );
 
     const address = useAddress();
     const connect = useMetamask();
 
     const publishCampaign = async (form) => {
         try {
+            console.log(form);
             const data = await createCampaign([
-                address, // owner
-                form.title, // title
+                form.minimum, // minimum
+                form.name, // name
                 form.description, // description
-                form.target,
-                new Date(form.deadline).getTime(), // deadline,
-                form.image,
+                // new Date(form.deadline).getTime(), // deadline,
+                form.image, // image url
+                form.target, // target
             ]);
 
             console.log('contract call success', data);
@@ -30,20 +39,11 @@ export function StateContextProvider({ children }) {
     };
 
     const getCampaigns = async () => {
-        const campaigns = await contract.call('getCampaigns');
+        const campaigns = await campaignFactoryContract.call('getDeployedCampaigns');
 
-        const parsedCampaings = campaigns.map((campaign, i) => ({
-            owner: campaign.owner,
-            title: campaign.title,
-            description: campaign.description,
-            target: ethers.utils.formatEther(campaign.target.toString()),
-            deadline: campaign.deadline.toNumber(),
-            amountCollected: ethers.utils.formatEther(campaign.amountCollected.toString()),
-            image: campaign.image,
-            pId: i,
-        }));
+        const campaingDetails = campaigns.map((campaign, i) => campaignContract.call('getSummary'));
 
-        return parsedCampaings;
+        return campaingDetails;
     };
 
     const getUserCampaigns = async () => {
@@ -55,7 +55,7 @@ export function StateContextProvider({ children }) {
     };
 
     const donate = async (pId, amount) => {
-        const data = await contract.call('donateToCampaign', pId, {
+        const data = await campaignContract.call('donateToCampaign', pId, {
             value: ethers.utils.parseEther(amount),
         });
 
@@ -64,12 +64,12 @@ export function StateContextProvider({ children }) {
 
     // withdraw funds
     const withdraw = async (pId) => {
-        const data = await contract.call('withdraw', pId);
+        const data = await campaignContract.call('withdraw', pId);
         return data;
     };
 
     const getDonations = async (pId) => {
-        const donations = await contract.call('getDonators', pId);
+        const donations = await campaignContract.call('getDonators', pId);
         const numberOfDonations = donations[0].length;
 
         const parsedDonations = [];
@@ -101,7 +101,8 @@ export function StateContextProvider({ children }) {
             // eslint-disable-next-line react/jsx-no-constructed-context-values
             value={{
                 address,
-                contract,
+                campaignFactoryContract,
+                campaignContract,
                 connect,
                 createCampaign: publishCampaign,
                 getCampaigns,

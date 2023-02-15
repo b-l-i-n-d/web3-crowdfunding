@@ -12,11 +12,10 @@ function CreateCampaign() {
     const [isLoading, setIsLoading] = useState(false);
     const { createCampaign } = useStateContext();
     const [form, setForm] = useState({
+        minimum: '',
         name: '',
-        title: '',
         description: '',
         target: '',
-        deadline: '',
         image: '',
     });
 
@@ -30,7 +29,11 @@ function CreateCampaign() {
         checkIfImage(form.image, async (exists) => {
             if (exists) {
                 setIsLoading(true);
-                await createCampaign({ ...form, target: ethers.utils.parseUnits(form.target, 18) });
+                await createCampaign({
+                    ...form,
+                    minimum: ethers.utils.parseUnits(form.minimum, 18),
+                    target: ethers.utils.parseUnits(form.target, 18),
+                });
                 setIsLoading(false);
                 navigate('/');
             } else {
@@ -52,18 +55,18 @@ function CreateCampaign() {
             <form onSubmit={handleSubmit} className="w-full mt-[65px] flex flex-col gap-[30px]">
                 <div className="flex flex-wrap gap-[40px]">
                     <FormField
-                        labelName="Your Name *"
-                        placeholder="John Doe"
+                        labelName="Minimum *"
+                        placeholder="ETH 0.50"
                         inputType="text"
-                        value={form.name}
-                        handleChange={(e) => handleFormFieldChange('name', e)}
+                        value={form.minimum}
+                        handleChange={(e) => handleFormFieldChange('minimum', e)}
                     />
                     <FormField
                         labelName="Campaign Title *"
                         placeholder="Write a title"
                         inputType="text"
-                        value={form.title}
-                        handleChange={(e) => handleFormFieldChange('title', e)}
+                        value={form.name}
+                        handleChange={(e) => handleFormFieldChange('name', e)}
                     />
                 </div>
 
@@ -90,13 +93,13 @@ function CreateCampaign() {
                         value={form.target}
                         handleChange={(e) => handleFormFieldChange('target', e)}
                     />
-                    <FormField
+                    {/* <FormField
                         labelName="End Date *"
                         placeholder="End Date"
                         inputType="date"
                         value={form.deadline}
                         handleChange={(e) => handleFormFieldChange('deadline', e)}
-                    />
+                    /> */}
                 </div>
 
                 <FormField

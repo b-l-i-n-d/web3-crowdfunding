@@ -7,19 +7,20 @@ function Home() {
     const [isLoading, setIsLoading] = useState(false);
     const [campaigns, setCampaigns] = useState([]);
 
-    const { address, contract, getCampaigns } = useStateContext();
+    const { address, campaignContract, getCampaigns } = useStateContext();
 
     const fetchCampaigns = async () => {
         setIsLoading(true);
         const data = await getCampaigns();
+        console.log(data);
         setCampaigns(data);
         setIsLoading(false);
     };
 
     useEffect(() => {
-        if (contract) fetchCampaigns();
+        if (campaignContract) fetchCampaigns();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [address, contract]);
+    }, [address, campaignContract]);
 
     return <DisplayCampaigns title="All Campaigns" isLoading={isLoading} campaigns={campaigns} />;
 }
