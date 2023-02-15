@@ -83,7 +83,10 @@ function CampaignDetails() {
                 </div>
 
                 <div className="flex md:w-[150px] w-full flex-wrap justify-between gap-[30px]">
-                    <CountBox title="Days Left" value={remainingDays} />
+                    <CountBox
+                        title={remainingDays > 0 && 'Days Left'}
+                        value={remainingDays <= 0 ? 'Ended' : remainingDays}
+                    />
                     <CountBox title={`Raised of ${state.target}`} value={state.amountCollected} />
                     <CountBox title="Total Backers" value={donators.length} />
                 </div>
