@@ -15,9 +15,9 @@ function Table({ paymentsData }) {
                 (item) =>
                     item.to &&
                     item.functionName && (
-                        <tr className="hover">
+                        <tr className="hover bg-[#1c1c24]">
                             <th>{index++}</th>
-                            <td>{item.to}</td>
+                            <td className="font-firaMono text-primary-content">{item.to}</td>
                             <td>{item.value / 1000000000000000000}</td>
                             <td>{moment(item.timeStamp * 1000).format('DD MMM YYYY hh:mm a')}</td>
                         </tr>
@@ -27,7 +27,7 @@ function Table({ paymentsData }) {
     console.log(tableRowElements);
 
     return (
-        <table className="table w-full">
+        <table data-theme="business" className="table w-full">
             <thead>
                 <tr>
                     <th />
