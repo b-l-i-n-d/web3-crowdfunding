@@ -1,7 +1,15 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Navbar, Sidebar } from './components';
-import { CampaignDetails, CreateCampaign, Home, PaymentDetails, Profile } from './pages';
+import {
+    CampaignDetails,
+    CampaignNewRequest,
+    CampaignRequests,
+    CreateCampaign,
+    Home,
+    PaymentDetails,
+    Profile,
+} from './pages';
 
 export default function App() {
     return (
@@ -17,6 +25,11 @@ export default function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/create-campaign" element={<CreateCampaign />} />
                     <Route path="/campaign-details/:id" element={<CampaignDetails />} />
+                    <Route path="/campaign-details/:id/requests" element={<CampaignRequests />} />
+                    <Route
+                        path="/campaign-details/:id/requests/new"
+                        element={<CampaignNewRequest />}
+                    />
                     <Route path="/payments" element={<PaymentDetails />} />
                     <Route path="*" element={<div>404</div>} />
                 </Routes>

@@ -5,15 +5,14 @@ import { useStateContext } from '../context';
 
 function Home() {
     const [isLoading, setIsLoading] = useState(false);
-    const [campaigns, setCampaigns] = useState([]);
+    const [campaignAddresses, setCampaignAddress] = useState([]);
 
-    const { address, campaignContract, getCampaigns } = useStateContext();
+    const { address, campaignContract, getCampaignAddresses } = useStateContext();
 
     const fetchCampaigns = async () => {
         setIsLoading(true);
-        const data = await getCampaigns();
-        console.log(data);
-        setCampaigns(data);
+        const data = await getCampaignAddresses();
+        setCampaignAddress(data);
         setIsLoading(false);
     };
 
@@ -22,7 +21,13 @@ function Home() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [address, campaignContract]);
 
-    return <DisplayCampaigns title="All Campaigns" isLoading={isLoading} campaigns={campaigns} />;
+    return (
+        <DisplayCampaigns
+            title="All Campaigns"
+            isLoading={isLoading}
+            campaignAddresses={campaignAddresses}
+        />
+    );
 }
 
 export default Home;

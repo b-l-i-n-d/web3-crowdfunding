@@ -114,7 +114,7 @@ function CreateCampaign() {
                     <CustomButton
                         btnType="submit"
                         title="Submit new campaign"
-                        styles="bg-[#1dc071]"
+                        styles="btn-primary"
                     />
                 </div>
             </form>

@@ -16,7 +16,7 @@ function FormField({ labelName, placeholder, inputType, isTextArea, value, handl
                     onChange={handleChange}
                     rows={10}
                     placeholder={placeholder}
-                    className="py-[15px] sm:px-[25px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-white text-[14px] placeholder:text-[#4b5264] rounded-[10px] sm:min-w-[300px]"
+                    className="textarea textarea-primary"
                 />
             ) : (
                 <input
@@ -31,7 +31,7 @@ function FormField({ labelName, placeholder, inputType, isTextArea, value, handl
                             .toISOString()
                             .split('T')[0]
                     }
-                    className="py-[15px] sm:px-[25px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-white text-[14px] placeholder:text-[#4b5264] rounded-[10px] sm:min-w-[300px]"
+                    className="input input-primary"
                 />
             )}
         </label>

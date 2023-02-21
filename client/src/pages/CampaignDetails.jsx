@@ -1,25 +1,42 @@
+import { useContract } from '@thirdweb-dev/react';
+import { ethers } from 'ethers';
 import React, { useEffect, useId, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { thirdweb } from '../assets';
 import { CountBox, CustomButton, Loader } from '../components';
 import { useStateContext } from '../context';
-import { calculateBarPercentage, daysLeft } from '../utils';
+import { calculateBarPercentage } from '../utils';
 
 function CampaignDetails() {
-    const { state } = useLocation();
+    const {
+        state: { campaignData, campaignAddress },
+    } = useLocation();
+
+    const { contract: campaignContract } = useContract(campaignAddress);
+
     const navigate = useNavigate();
-    const { donate, getDonations, contract, address } = useStateContext();
+    const { getDonations, contract, address } = useStateContext();
 
     const [isLoading, setIsLoading] = useState(false);
     const [amount, setAmount] = useState('');
     const [donators, setDonators] = useState([]);
     const keyId = useId();
 
-    const remainingDays = daysLeft(state.deadline);
+    const contribute = async (contributeAmount) => {
+        try {
+            const data = await campaignContract.call('contibute', {
+                value: ethers.utils.parseEther(contributeAmount),
+            });
+            return data;
+        } catch (error) {
+            return error;
+        }
+    };
+    // const remainingDays = daysLeft(campaignData.deadline);
 
     const fetchDonators = async () => {
-        const data = await getDonations(state.pId);
+        const data = await getDonations(campaignData.pId);
 
         setDonators(data);
     };
@@ -33,29 +50,23 @@ function CampaignDetails() {
         setIsLoading(true);
 
         try {
-            await donate(state.pId, amount);
+            const data = await contribute(amount);
+            console.log('🚀 ~ file: CampaignDetails.jsx:58 ~ handleDonate ~ data', data);
 
             navigate('/');
             setIsLoading(false);
         } catch (error) {
             alert('Transaction failed. Please try again.');
             setIsLoading(false);
+            console.log(error);
         }
     };
 
-    // const handleWithdraw = async () => {
-    //     setIsLoading(true);
-
-    //     try {
-    //         await contract.call('withdraw', state.pId);
-
-    //         navigate('/');
-    //         setIsLoading(false);
-    //     } catch (error) {
-    //         alert('Transaction failed. Please try again.');
-    //         setIsLoading(false);
-    //     }
-    // };
+    const handleNavigate = (campaignName) => {
+        navigate(`/campaign-details/${campaignName}/requests`, {
+            state: { campaignData, campaignAddress },
+        });
+    };
 
     return (
         <div>
@@ -63,8 +74,9 @@ function CampaignDetails() {
 
             <div className="w-full flex md:flex-row flex-col mt-10 gap-[30px]">
                 <div className="flex-1 flex-col">
+                    {/* Image */}
                     <img
-                        src={state.image}
+                        src={campaignData[7]}
                         alt="campaign"
                         className="w-full h-[410px] object-cover rounded-xl"
                     />
@@ -73,8 +85,10 @@ function CampaignDetails() {
                             className="absolute h-full bg-[#4acd8d]"
                             style={{
                                 width: `${calculateBarPercentage(
-                                    state.target,
-                                    state.amountCollected
+                                    // target
+                                    ethers.utils.formatEther(campaignData[8]),
+                                    // balance
+                                    ethers.utils.formatEther(campaignData[1])
                                 )}%`,
                                 maxWidth: '100%',
                             }}
@@ -84,11 +98,17 @@ function CampaignDetails() {
 
                 <div className="flex md:w-[150px] w-full flex-wrap justify-between gap-[30px]">
                     <CountBox
-                        title={remainingDays > 0 && 'Days Left'}
-                        value={remainingDays <= 0 ? 'Ended' : remainingDays}
+                        title="Minimum Contribution"
+                        value={ethers.utils.formatEther(campaignData[0])}
                     />
-                    <CountBox title={`Raised of ${state.target}`} value={state.amountCollected} />
-                    <CountBox title="Total Backers" value={donators.length} />
+                    <CountBox
+                        title={`Raised of ${ethers.utils.formatEther(campaignData[8])}`}
+                        value={ethers.utils.formatEther(campaignData[1])}
+                    />
+                    <CountBox
+                        title="Total Backers"
+                        // value={campaignData[9].length ? campaignData[9].length : 'No donators'}
+                    />
                 </div>
             </div>
 
@@ -108,12 +128,13 @@ function CampaignDetails() {
                                 />
                             </div>
                             <div>
+                                {/* Manager */}
                                 <h4 className="font-epilogue font-semibold text-[14px] text-white break-all">
-                                    {state.owner}
+                                    {campaignData[4]}
                                 </h4>
-                                <p className="mt-[4px] font-epilogue font-normal text-[12px] text-[#808191]">
+                                {/* <p className="mt-[4px] font-epilogue font-normal text-[12px] text-[#808191]">
                                     10 Campaigns
-                                </p>
+                                </p> */}
                             </div>
                         </div>
                     </div>
@@ -124,8 +145,9 @@ function CampaignDetails() {
                         </h4>
 
                         <div className="mt-[20px]">
+                            {/* Description */}
                             <p className="font-epilogue font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
-                                {state.description}
+                                {campaignData[6]}
                             </p>
                         </div>
                     </div>
@@ -166,52 +188,81 @@ function CampaignDetails() {
                 </div>
 
                 <div className="flex-1">
-                    {remainingDays > 0 && (
-                        <>
-                            <h4 className="font-epilogue font-semibold text-[18px] text-white uppercase">
-                                Fund
-                            </h4>
+                    {/* {remainingDays > 0 && (
+                        <> */}
+                    <h4 className="font-epilogue font-semibold text-[18px] text-white uppercase">
+                        Fund
+                    </h4>
 
-                            <div className="mt-[20px] flex flex-col p-4 bg-[#1c1c24] rounded-[10px]">
-                                <p className="font-epilogue fount-medium text-[20px] leading-[30px] text-center text-[#808191]">
-                                    Fund the campaign
+                    <div className="mt-[20px] flex flex-col p-4 bg-[#1c1c24] rounded-[10px]">
+                        <p className="font-epilogue fount-medium text-[20px] leading-[30px] text-center text-[#808191]">
+                            Fund the campaign
+                        </p>
+                        <div className="mt-[30px] transition-all duration-300">
+                            <input
+                                type="number"
+                                placeholder="ETH 0.1"
+                                step="0.01"
+                                min={ethers.utils.formatEther(campaignData[0])}
+                                className={`${
+                                    amount < ethers.utils.formatEther(campaignData[0])
+                                        ? 'input-error'
+                                        : 'input-primary'
+                                } input w-full`}
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                            />
+                            {amount < ethers.utils.formatEther(campaignData[0]) && (
+                                <p className="mt-[10px] font-epilogue font-normal text-[12px] text-error">
+                                    Minimum contribution is{' '}
+                                    {ethers.utils.formatEther(campaignData[0])} ETH
                                 </p>
-                                <div className="mt-[30px]">
-                                    <input
-                                        type="number"
-                                        placeholder="ETH 0.1"
-                                        step="0.01"
-                                        className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-white text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
-                                        value={amount}
-                                        onChange={(e) => setAmount(e.target.value)}
-                                    />
-                                    <div className="my-[20px] p-4 bg-[#13131a] rounded-[10px]">
-                                        <h4 className="font-epilogue font-semibold text-[14px] leading-[22px] text-white">
-                                            Back it because you believe in it.
-                                        </h4>
-                                        <p className="mt-[20px] font-epilogue font-normal leading-[22px] text-[#808191]">
-                                            Support the project for no reward, just because it
-                                            speaks to you.
-                                        </p>
-                                    </div>
-                                    <CustomButton
-                                        btnType="button"
-                                        title="Fund Campaign"
-                                        styles="w-full bg-[#8c6dfd]"
-                                        handleClick={handleDonate}
-                                    />
-                                    {/* {state.owner === address && (
+                            )}
+                            <div className="my-[20px] p-4 bg-[#13131a] rounded-[10px]">
+                                <h4 className="font-epilogue font-semibold text-[14px] leading-[22px] text-white">
+                                    Back it because you believe in it.
+                                </h4>
+                                <p className="mt-[20px] font-epilogue font-normal leading-[22px] text-[#808191]">
+                                    Support the project for no reward, just because it speaks to
+                                    you.
+                                </p>
+                            </div>
+                            {address ? (
                                 <CustomButton
                                     btnType="button"
-                                    title="Withdraw"
-                                    styles="w-full mt-[20px] bg-[#ff4d4d]"
-                                    handleClick={handleWithdraw}
+                                    title="Fund Campaign"
+                                    styles="w-full btn-primary"
+                                    handleClick={handleDonate}
                                 />
-                            )} */}
+                            ) : (
+                                <div className="alert alert-warning shadow-lg">
+                                    <div>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            className="stroke-current flex-shrink-0 w-6 h-6"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
+                                        </svg>
+                                        <span>Connect your wallet first.</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </>
-                    )}
+                            )}
+
+                            <CustomButton
+                                btnType="button"
+                                title="View Withdrawal Request"
+                                styles="w-full mt-[20px] btn-secondary"
+                                handleClick={() => handleNavigate(campaignData[5])}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

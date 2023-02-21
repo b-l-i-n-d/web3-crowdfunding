@@ -22,7 +22,9 @@ function PaymentDetails() {
                 Payment Details
             </h1>
 
-            <div className="mt-20 flex">
+            <div className="divider" />
+
+            <div className="mt-10 flex">
                 <Table paymentsData={paymentsData} />
             </div>
         </div>

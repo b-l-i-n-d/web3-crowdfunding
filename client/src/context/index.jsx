@@ -10,8 +10,9 @@ export function StateContextProvider({ children }) {
         '0x26Ca3aE8Bd22a65FB02f75CC9B3B2959AB74839D'
     );
     const { contract: campaignContract } = useContract(
-        '0x018cC231dfAf369f7F07886404d4f3d09c473462'
+        '0x8f5CFf659bB229b456992eeD476B3f4dbd464200'
     );
+
     const { mutateAsync: createCampaign } = useContractWrite(
         campaignFactoryContract,
         'createCampaign'
@@ -38,28 +39,18 @@ export function StateContextProvider({ children }) {
         }
     };
 
-    const getCampaigns = async () => {
-        const campaigns = await campaignFactoryContract.call('getDeployedCampaigns');
+    const getCampaignAddresses = async () => {
+        const campaignAddresses = await campaignFactoryContract.call('getDeployedCampaigns');
 
-        const campaingDetails = campaigns.map((campaign, i) => campaignContract.call('getSummary'));
-
-        return campaingDetails;
+        return campaignAddresses;
     };
 
     const getUserCampaigns = async () => {
-        const allCampaigns = await getCampaigns();
+        const allCampaigns = await getCampaignAddresses();
 
         const filteredCampaigns = allCampaigns.filter((campaign) => campaign.owner === address);
 
         return filteredCampaigns;
-    };
-
-    const donate = async (pId, amount) => {
-        const data = await campaignContract.call('donateToCampaign', pId, {
-            value: ethers.utils.parseEther(amount),
-        });
-
-        return data;
     };
 
     // withdraw funds
@@ -105,9 +96,8 @@ export function StateContextProvider({ children }) {
                 campaignContract,
                 connect,
                 createCampaign: publishCampaign,
-                getCampaigns,
+                getCampaignAddresses,
                 getUserCampaigns,
-                donate,
                 withdraw,
                 getDonations,
                 getPayments,

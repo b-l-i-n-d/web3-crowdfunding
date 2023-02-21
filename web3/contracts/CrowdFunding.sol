@@ -25,17 +25,6 @@ contract CampaignFactory {
     function getDeployedCampaigns() public view returns (Campaign[] memory) {
         return deployedCampaigns;
     }
-
-    // function getCampaigns() public view returns (Campaign[] memory) {
-    //     Campaign[] memory allCampaigns = new Campaign[](numberOfCampaigns);
-
-    //     for (uint256 i = 0; i < numberOfCampaigns; i++) {
-    //         Campaign storage item = campaigns[i];
-    //         allCampaigns[i] = item;
-    //     }
-
-    //     return allCampaigns;
-    // }
 }
 
 contract Campaign {
@@ -81,7 +70,7 @@ contract Campaign {
     }
 
     function contibute() public payable {
-        require(msg.value > minimunContribution);
+        require(msg.value >= minimunContribution);
 
         contributers.push(msg.sender);
         approvers[msg.sender] = true;
@@ -130,19 +119,21 @@ contract Campaign {
             string memory,
             string memory,
             string memory,
-            uint256
+            uint256,
+            address[] memory
         )
     {
         return (
-            minimunContribution,
-            address(this).balance,
-            requests.length,
-            approversCount,
-            manager,
-            CampaignName,
-            CampaignDescription,
-            imageUrl,
-            targetToAchieve
+            minimunContribution, //0
+            address(this).balance, //1
+            requests.length, //2
+            approversCount, //3
+            manager, //4
+            CampaignName, //5
+            CampaignDescription, //6
+            imageUrl, //7
+            targetToAchieve, //8
+            contributers //9
         );
     }
 
